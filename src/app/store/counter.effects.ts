@@ -10,10 +10,10 @@ export class CounterEffects {
   loadCount = createEffect(() =>
     this.actions$.pipe(
       ofType(init),
-      switchMap(() => {
+      switchMap(() => { //switchMap() returns a new Observable
         const storedCounter = localStorage.getItem('count');
         if (storedCounter) {
-          return of(set({ value: +storedCounter }));
+          return of(set({ value: +storedCounter })); //of() will transform the set action into an Observable
         }
         return of(set({ value: 0 }));
       })
@@ -24,12 +24,12 @@ export class CounterEffects {
     () =>
       this.actions$.pipe(
         ofType(increment, decrement),
-        withLatestFrom(this.store.select(selectCount)),
+        withLatestFrom(this.store.select(selectCount)), //withLatestFrom will return an array of data, and in the tap() let's use the action and the data that was merged into this array = counter
         tap(([action, counter]) => {
           localStorage.setItem('count', counter.toString());
         })
       ),
-    { dispatch: false }
+    { dispatch: false } //use this second arg to NOT dispatch another action when this effect ends.
   );
 
   constructor(
